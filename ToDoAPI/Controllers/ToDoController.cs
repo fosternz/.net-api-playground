@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using ToDoLibrary.DataAccess;
 using ToDoLibrary.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace ToDoAPI.Controllers
 {
@@ -9,25 +9,46 @@ namespace ToDoAPI.Controllers
     [ApiController]
     public class ToDoController : ControllerBase
     {
+
+        private readonly ITodoData _data;
+
+        public ToDoController(ITodoData data)
+        {
+            _data = data;            
+        }
+
+        private int GetUserId()
+        {
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            return int.Parse(userId);
+        }
+
         // GET: api/ToDo
         [HttpGet]
-        public ActionResult<IEnumerable<ToDoModel>> Get()
+        public async Task<ActionResult<List<ToDoModel>>> Get()
         {
-            throw new NotImplementedException();
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var response =  await _data.GetAllAssigned(GetUserId());
+
+            return Ok(response);
         }
 
         // GET api/ToDo/5
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<ActionResult<ToDoModel>> Get(int todoId)
         {
-            throw new NotImplementedException();
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var response = await _data.GetOneAssigned(GetUserId(), todoId);
+
+            return Ok(response);
         }
 
         // POST api/ToDo
         [HttpPost]
-        public IActionResult Post([FromBody] string value)
+        public async Task<ActionResult<ToDoModel>> Post([FromBody] string task)
         {
-            throw new NotImplementedException();
+            var response = await _data.Create(GetUserId(), task);
+            return Ok(response);
         }
 
         // PUT api/ToDo
