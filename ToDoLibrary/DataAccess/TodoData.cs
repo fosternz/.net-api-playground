@@ -15,7 +15,7 @@ public class TodoData : ITodoData
     public Task<List<ToDoModel>> GetAllAssigned(int assingedTo)
     {
         return _sql.LoadData<ToDoModel, dynamic>(
-            "dbo.spTodos_GetAllAssigned",
+            "dbo.spTodo_GetAllAssigned",
             new { AssignedTo = assingedTo },
             "Default");
     }
@@ -23,7 +23,7 @@ public class TodoData : ITodoData
     public async Task<ToDoModel?> GetOneAssigned(int assingedTo, int todoId)
     {
         var results = await _sql.LoadData<ToDoModel, dynamic>(
-            "dbo.spTodos_GetOneAssigned",
+            "dbo.spTodo_GetOneAssigned",
             new { AssignedTo = assingedTo, TodoId = todoId },
             "Default");
 
@@ -33,7 +33,7 @@ public class TodoData : ITodoData
     public async Task<ToDoModel?> Create(int assingedTo, string task)
     {
         var results = await _sql.LoadData<ToDoModel, dynamic>(
-            "dbo.spTodos_Create",
+            "dbo.spTodo_Create",
             new { AssignedTo = assingedTo, Task = task },
             "Default");
 
@@ -42,7 +42,7 @@ public class TodoData : ITodoData
     public Task UpdateTask(int assingedTo, int todoId, string task)
     {
         return _sql.SaveData<dynamic>(
-            "dbo.spTodos_UpdateTask",
+            "dbo.spTodo_UpdateTask",
             new { AssignedTo = assingedTo, TodoId = todoId, Task = task },
             "Default");
     }
@@ -50,7 +50,7 @@ public class TodoData : ITodoData
     public Task CompleteTodo(int assingedTo, int todoId)
     {
         return _sql.SaveData<dynamic>(
-            "dbo.spTodos_CompleteTodo",
+            "dbo.spTodo_CompleteTodo",
             new { AssignedTo = assingedTo, TodoId = todoId },
             "Default");
     }
@@ -58,7 +58,7 @@ public class TodoData : ITodoData
     public Task SaveData(int assingedTo, int todoId)
     {
         return _sql.SaveData<dynamic>(
-            "dbo.spTodos_Delete",
+            "dbo.spTodo_Delete",
             new { AssignedTo = assingedTo, TodoId = todoId },
             "Default");
     }

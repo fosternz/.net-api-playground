@@ -11,10 +11,12 @@ namespace ToDoAPI.Controllers
     {
 
         private readonly ITodoData _data;
+        private readonly ILogger<ToDoController> _logger;
 
-        public ToDoController(ITodoData data)
+        public ToDoController(ITodoData data, ILogger<ToDoController> logger)
         {
-            _data = data;            
+            _data = data;
+            _logger = logger;
         }
 
         private int GetUserId()
@@ -27,20 +29,33 @@ namespace ToDoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<List<ToDoModel>>> Get()
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var response =  await _data.GetAllAssigned(GetUserId());
-
-            return Ok(response);
+            try
+            {
+                var output = await _data.GetAllAssigned(GetUserId());
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "GET api/todos failed");
+                return BadRequest();
+            }
         }
 
         // GET api/ToDo/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ToDoModel>> Get(int todoId)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var response = await _data.GetOneAssigned(GetUserId(), todoId);
+            try
+            {
+                var output = await _data.GetOneAssigned(GetUserId(), todoId);
+                return Ok(output);
+            }
+            catch (Exception ex)
+            {
 
-            return Ok(response);
+                _logger.LogError(ex, "GET api/todos/[id] failed", todoId);
+                return BadRequest();
+            }
         }
 
         // POST api/ToDo
